@@ -16,7 +16,21 @@ variable "vpc_name" {
   default     = "my-tf-vpc"
 }
 
+variable "ami" {
+  description = "ami type"
+  type        = string
+  default     = "ami-0861f4e788f5069dd"
+}
 
+variable "instance_type" {
+  description = "instance type os an ec2"
+  type        = string
+  default     = "t2.micro"
+}
 
-
+variable "template_name" {
+  description = "Prefix name of the launch template"
+  type        = string
+  default     = "tf-launch-template"
+}
 
