@@ -10,7 +10,16 @@ terraform {
   }
 }
 
+provider "aws" {
+  region = var.region
+}
 
+
+module "vpc" {
+  source = "./modules/vpc"
+  vpc_cidr_block = var.cidr_block
+  vpc_name = var.vpc_name
+}
 
 
 
