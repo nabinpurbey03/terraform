@@ -44,6 +44,19 @@ module "ec2" {
   })
 }
 
+# Application Load Balancer + ASG Module
+module "elb" {
+  source               = "./modules/elb"
+  name                 = "myapp"
+  vpc_id               = module.vpc.vpc_id
+  public_subnets       = module.vpc.public_subnet_ids
+  alb_sg_ids           = [aws_security_group.alb_sg.id]
+  launch_template_id   = module.ec2.launch_template_id
+  asg_min_size         = 2
+  asg_max_size         = 3
+  asg_desired_capacity = 2
+}
+
 resource "aws_security_group" "ec2_sg" {
   vpc_id = module.vpc.vpc_id
 
@@ -61,10 +74,45 @@ resource "aws_security_group" "ec2_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+# Security Group for ALB
+resource "aws_security_group" "alb_sg" {
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "alb-sg" }
 }

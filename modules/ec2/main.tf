@@ -3,6 +3,7 @@ resource "aws_launch_template" "my_tf_template" {
   name_prefix   = var.template_name
   image_id      = var.ami
   instance_type = var.instance_type
+  user_data = var.user_data
 }
 
 #EC2
